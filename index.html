@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Only For You 💝</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+
+body{
+  height:100vh;
+  background:radial-gradient(circle at top,#ff6fa1,#ff2f7d);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+}
+
+.container{
+  position:absolute;
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(15px);
+  padding:40px;
+  border-radius:25px;
+  text-align:center;
+  width:90%;
+  max-width:420px;
+  color:white;
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+}
+
+#screen2{opacity:0;pointer-events:none;}
+
+.fadeOut{opacity:0;transform:scale(0.9);}
+.fadeIn{opacity:1 !important;pointer-events:auto !important;}
+
+.main-heart{
+  font-size:60px;
+  animation:beat 1s infinite;
+}
+
+@keyframes beat{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.3);}
+  100%{transform:scale(1);}
+}
+
+h1{
+  font-size:28px;
+  margin:10px 0;
+}
+
+button{
+  margin-top:20px;
+  padding:12px 30px;
+  border:none;
+  border-radius:30px;
+  background:#ff2f7d;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+input{
+  padding:10px;
+  border-radius:20px;
+  border:none;
+  width:80%;
+  margin-top:10px;
+  text-align:center;
+}
+
+.lyrics{
+  font-size:24px;
+  min-height:100px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🔐 PASSWORD -->
+<div class="container" id="lockScreen">
+  <div class="main-heart">🔐</div>
+  <h1>Private Access 💖</h1>
+  <input type="password" id="password" placeholder="Enter our secret 💕">
+  <button onclick="checkPassword()">Unlock</button>
+  <p id="error"></p>
+</div>
+
+<!-- 💝 SCREEN 1 -->
+<div class="container" id="screen1" style="display:none;">
+  <div class="main-heart">💝</div>
+  <h1>For You ❤️</h1>
+  <button onclick="startLove()">Start</button>
+</div>
+
+<!-- 🎬 SCREEN 2 -->
+<div class="container" id="screen2">
+  <h1 id="nameText"></h1>
+  <div class="lyrics" id="lyrics">💗 Wait...</div>
+</div>
+
+<!-- 🎵 AUDIO -->
+<audio id="song" src="assets/kaisi_dillagi.mp3" preload="auto"></audio>
+
+<script>
+
+/* 🔐 PASSWORD */
+function checkPassword(){
+  const pass=document.getElementById("password").value;
+  if(pass==="tanya"){
+    lockScreen.style.display="none";
+    screen1.style.display="block";
+  }else{
+    error.innerText="❌ Wrong Password";
+  }
+}
+
+/* ELEMENTS */
+const screen1=document.getElementById("screen1");
+const screen2=document.getElementById("screen2");
+const song=document.getElementById("song");
+const lyricsBox=document.getElementById("lyrics");
+const nameBox=document.getElementById("nameText");
+
+/* 💖 NAME TYPE EFFECT */
+function typeName(){
+  let text="Only For Tanya 💖";
+  let i=0;
+  let interval=setInterval(()=>{
+    nameBox.innerText += text.charAt(i);
+    i++;
+    if(i>=text.length) clearInterval(interval);
+  },70);
+}
+
+/* 🎵 LYRICS */
+const timedLyrics=[
+  {text:"Kaisi दिल लगी है तू 💖",time:0},
+  {text:"Kaisi बेबसी है तू ✨",time:3},
+  {text:"Meri Zindagi Hai Tu ❤️",time:6},
+  {text:"आखो के नमी है तू 😍",time:9},
+  {text:"सब है पर कमी है तू 💕",time:12},
+  {text:"Meri Zindagi Hai Tu 🎶",time:15}
+];
+
+let index=0;
+let started=false;
+
+/* 🚀 START */
+function startLove(){
+
+  screen1.classList.add("fadeOut");
+
+  setTimeout(()=>{
+    screen1.style.display="none";
+    screen2.classList.add("fadeIn");
+    typeName(); // 🔥 NAME ANIMATION
+  },500);
+
+  song.currentTime=0;
+
+  song.play().then(()=>{
+    if(!started){
+      startLyrics();
+      started=true;
+    }
+  }).catch(()=>{
+    lyricsBox.innerText="👉 Tap anywhere to start 💕";
+  });
+}
+
+/* 📱 CLICK FIX */
+document.body.addEventListener("click",()=>{
+  if(song.paused){
+    song.play();
+    if(!started){
+      startLyrics();
+      started=true;
+    }
+  }
+});
+
+/* ✍️ TEXT TYPE */
+function typeText(text){
+  let i=0;
+  lyricsBox.innerText="";
+  let interval=setInterval(()=>{
+    lyricsBox.innerText+=text.charAt(i);
+    i++;
+    if(i>=text.length)clearInterval(interval);
+  },40);
+}
+
+/* 🎼 LYRICS SYNC */
+function startLyrics(){
+  song.addEventListener("timeupdate",()=>{
+    if(index<timedLyrics.length){
+      if(song.currentTime>=timedLyrics[index].time){
+        typeText(timedLyrics[index].text);
+        index++;
+      }
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>
